@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cilya Salon - Reservasi</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f2f4;
+    color: #252525;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+    width: 235px;
+    background: #202020;
+    color: white;
+    padding: 25px 17px;
+    flex-shrink: 0;
+}
+
+.brand {
+    margin: 0 10px 28px;
+}
+
+.brand h2 {
+    font-size: 22px;
+    margin-bottom: 3px;
+}
+
+.brand small {
+    color: #dae5e6;
+    font-size: 12px;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.menu button {
+    border: 1px solid rgba(255,255,255,.18);
+    background: transparent;
+    color: #d3c3d2;
+    border-radius: 7px;
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.menu button:hover,
+.menu button.active {
+    background: #716c72;
+    border-color: #303030;
+}
+
+.menu button span {
+    display: inline-block;
+    width: 23px;
+}
+
+/* ================= CONTENT ================= */
+
+.content {
+    flex: 1;
+    padding: 38px 40px;
+    overflow-x: auto;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 23px;
+}
+
+.topbar h1 {
+    font-size: 25px;
+    margin-bottom: 7px;
+}
+
+.topbar p {
+    color: #5e5e5e;
+    font-size: 13px;
+}
+
+.add-btn {
+    background: #000000;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    padding: 11px 17px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.add-btn:hover {
+    background: #565357;
+}
+
+/* ================= FILTER ================= */
+
+.filter-box {
+    background: white;
+    border: 1px solid #e7e1e5;
+    border-radius: 9px;
+    padding: 15px;
+    margin-bottom: 18px;
+
+    display: grid;
+    grid-template-columns: 1fr 145px 145px;
+    gap: 10px;
+}
+
+.filter-box input,
+.filter-box select {
+    width: 100%;
+    padding: 10px 11px;
+    border: 1px solid #ded8de;
+    border-radius: 6px;
+    outline: none;
+    color: #474747;
+    font-size: 12px;
+    background: white;
+}
+
+/* ================= TABLE ================= */
+
+.table-card {
+    background: white;
+    border: 1px solid #e7e1e5;
+    border-radius: 9px;
+    overflow: hidden;
+}
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 850px;
+}
+
+th {
+    background: #fbf9fb;
+    color: #313131;
+    font-size: 11px;
+    text-align: left;
+    padding: 14px 15px;
+    border-bottom: 1px solid #e9e4e8;
+}
+
+td {
+    padding: 15px;
+    font-size: 12px;
+    border-bottom: 1px solid #eee9ed;
+    color: #444444;
+}
+
+tr:hover td {
+    background: #d7e2e2;
+}
+
+.code {
+    font-weight: bold;
+    color: #222022;
+}
+
+/* ================= STATUS ================= */
+
+.status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-weight: bold;
+    border: 1px solid;
+}
+
+.menunggu {
+    color: #3d3d3d;
+    border-color: #000000;
+    background: #fffdf3;
+}
+
+.dikonfirmasi {
+    color: #3d3d3d;
+    border-color: #0d0d0e;
+    background: #fffdf5;
+}
+
+.selesai {
+    color: #3d3d3d;
+    border-color: #020202;
+    background: #f4fbf7;
+}
+
+.ditolak {
+    color: #3d3d3d;
+    border-color: #000000;
+    background: #fff6f8;
+}
+
+/* ================= ACTION ================= */
+
+.actions {
+    display: flex;
+    gap: 6px;
+}
+
+.action-btn {
+    border: none;
+    border-radius: 5px;
+    padding: 7px 8px;
+    font-size: 10px;
+    cursor: pointer;
+    background: #f1edf2;
+    color: #181c3b;
+}
+
+.confirm {
+    background: #eee9d2;
+    color: #181b38;
+}
+
+.reject {
+    background: #f5e4e8;
+    color: #18213b;
+}
+
+.edit {
+    background: #e9e4ef;
+    color: #18203a;
+}
+
+.done {
+    background: #e2f0e9;
+    color: #18243b;
+}
+
+/* ================= MODAL ================= */
+
+.modal-bg {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(30, 20, 31, .55);
+
+    z-index: 20;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.modal-bg.show {
+    display: flex;
+}
+
+.modal {
+    width: 100%;
+    max-width: 510px;
+
+    background: white;
+
+    border-radius: 12px;
+
+    padding: 25px;
+}
+
+.modal h2 {
+    margin-bottom: 20px;
+    color: #050505;
+    font-size: 20px;
+}
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 13px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    display: block;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    color: #ffffff;
+
+    margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid #ddd5de;
+
+    border-radius: 6px;
+
+    outline: none;
+
+    font-size: 12px;
+}
+
+.modal-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 8px;
+
+    margin-top: 22px;
+}
+
+.cancel-btn,
+.save-btn {
+    border: none;
+
+    padding: 10px 16px;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 12px;
+}
+
+.cancel-btn {
+    background: #eee9ed;
+    color: #cfcbcf;
+}
+
+.save-btn {
+    background: #202020;
+    color: white;
+}
+
+/* ================= TOAST ================= */
+
+.toast {
+    position: fixed;
+
+    right: 22px;
+    bottom: 22px;
+
+    background: #444044;
+
+    color: white;
+
+    padding: 12px 17px;
+
+    border-radius: 7px;
+
+    font-size: 12px;
+
+    display: none;
+
+    z-index: 50;
+}
+
+.toast.show {
+    display: block;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 850px) {
+
+    .sidebar {
+        width: 190px;
+    }
+
+    .content {
+        padding: 25px 20px;
+    }
+
+    .filter-box {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .app {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .menu {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .menu button {
+        min-width: max-content;
+    }
+
+    .content {
+        padding: 22px 14px;
+    }
+
+    .topbar {
+        flex-direction: column;
+    }
+
+    .add-btn {
+        width: 100%;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: auto;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="app">
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+    <div class="brand">
+
+        <h2>Cicilya Salon</h2>
+
+        <small>Admin</small>
+
+    </div>
+
+
+    <nav class="menu">
+
+        <button>
+            <span>⌂</span>
+            Beranda
+        </button>
+
+        <button class="active">
+            <span>▣</span>
+            Reservasi
+        </button>
+
+        <button>
+            <span>▤</span>
+            Transaksi
+        </button>
+
+        <button>
+            <span>✂</span>
+            Treatment
+        </button>
+
+        <button>
+            <span>♧</span>
+            Pelanggan
+        </button>
+
+        <button>
+            <span>♟</span>
+            Karyawan
+        </button>
+
+        <button>
+            <span>♙</span>
+            Pengguna
+        </button>
+
+        <button>
+            <span>▥</span>
+            Laporan
+        </button>
+
+        <button>
+            <span>↪</span>
+            Keluar
+        </button>
+
+    </nav>
+
+</aside>
+
+
+<!-- ================= CONTENT ================= -->
+
+<main class="content">
+
+    <div class="topbar">
+
+        <div>
+
+            <h1>Reservasi</h1>
+
+            <p id="dateInfo">
+                kamis, 08 oktober 2026 • 5 jadwal
+            </p>
+
+        </div>
+
+
+        <button
+            class="add-btn"
+            onclick="openModal()">
+
+            ＋ Tambah reservasi
+
+        </button>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filter-box">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="Cari nama pelanggan atau nomor HP..."
+            oninput="renderTable()"
+        >
+
+
+        <input
+            type="date"
+            id="dateFilter"
+            onchange="renderTable()"
+        >
+
+
+        <select
+            id="statusFilter"
+            onchange="renderTable()">
+
+            <option value="">
+                Semua status
+            </option>
+
+            <option value="Menunggu">
+                Menunggu
+            </option>
+
+            <option value="Dikonfirmasi">
+                Dikonfirmasi
+            </option>
+
+            <option value="Selesai">
+                Selesai
+            </option>
+
+            <option value="Ditolak">
+                Ditolak
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="table-card">
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Kode</th>
+
+                        <th>Pelanggan</th>
+
+                        <th>Nomor HP</th>
+
+                        <th>Treatment</th>
+
+                        <th>Tanggal</th>
+
+                        <th>Jam</th>
+
+                        <th>Karyawan</th>
+
+                        <th>Status</th>
+
+                        <th>Aksi</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="tableBody"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</main>
+
+</div>
+
+
+<!-- ================= MODAL TAMBAH ================= -->
+
+<div
+    class="modal-bg"
+    id="modalBg">
+
+    <div class="modal">
+
+        <h2 id="modalTitle">
+            Tambah Reservasi
+        </h2>
+
+
+        <form
+            id="reservationForm"
+            onsubmit="saveReservation(event)">
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label>
+                        Nama Pelanggan
+                    </label>
+
+                    <input
+                        type="text"
+                        id="customer"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Nomor HP
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        placeholder="08xxxxxxxxxx"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Treatment
+                    </label>
+
+                    <select
+                        id="treatment"
+                        required>
+
+                        <option value="">
+                            Pilih treatment
+                        </option>
+
+                        <option>
+                            Smoothing
+                        </option>
+
+                        <option>
+                            Potong pria
+                        </option>
+
+                        <option>
+                            Creambath + potong
+                        </option>
+
+                        <option>
+                            Hair spa
+                        </option>
+
+                        <option>
+                            Facial dasar
+                        </option>
+
+                        <option>
+                            Hair coloring
+                        </option>
+
+                        <option>
+                            Manicure
+                        </option>
+
+                        <option>
+                            Pedicure
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Karyawan
+                    </label>
+
+                    <select id="employee">
+
+                        <option value="">
+                            Belum ditentukan
+                        </option>
+
+                        <option>Greis</option>
+
+                        <option>Dafin</option>
+
+                        <option>Tasya</option>
+
+                        <option>Meysarah</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Tanggal
+                    </label>
+
+                    <input
+                        type="date"
+                        id="date"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Jam
+                    </label>
+
+                    <input
+                        type="time"
+                        id="time"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select id="status">
+
+                        <option>
+                            Menunggu
+                        </option>
+
+                        <option>
+                            Dikonfirmasi
+                        </option>
+
+                        <option>
+                            Selesai
+                        </option>
+
+                        <option>
+                            Ditolak
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeModal()">
+
+                    Batal
+
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="save-btn">
+
+                    Simpan
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<!-- ================= MODAL LIHAT ================= -->
+
+<div
+    class="modal-bg"
+    id="viewBg">
+
+    <div class="modal">
+
+        <h2>
+            Detail Reservasi
+        </h2>
+
+
+        <div
+            id="viewContent"
+            style="
+                line-height:2;
+                font-size:13px;
+            ">
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="cancel-btn"
+                onclick="closeView()">
+
+                Tutup
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div
+    class="toast"
+    id="toast">
+</div>
+
+
+<script>
+
+/* ================= DATA RESERVASI ================= */
+
+let reservations = [
+
+    {
+        code: "RS-1043",
+        customer: "Irene",
+        phone: "081240657864",
+        treatment: "Smoothing",
+        date: "09-10-2026",
+        time: "15:00",
+        employee: "Meysarah",
+        status: "Menunggu"
+    },
+
+    {
+        code: "RS-1042",
+        customer: "Reyhan",
+        phone: "082278904527",
+        treatment: "Potong pria",
+        date: "11-10-2026",
+        time: "13:00",
+        employee: "Dafin",
+        status: "Dikonfirmasi"
+    },
+
+    {
+        code: "RS-1041",
+        customer: "Jesty",
+        phone: "082145378653",
+        treatment: "Nail Art",
+        date: "12-10-2026",
+        time: "10:30",
+        employee: "Greis",
+        status: "Selesai"
+    },
+
+    {
+        code: "RS-1040",
+        customer: "Viena",
+        phone: "082256089765",
+        treatment: "Hair color",
+        date: "13-10-2026",
+        time: "10:00",
+        employee: "Tasya",
+        status: "Selesai"
+    },
+
+    {
+        code: "RS-1039",
+        customer: "Natasya",
+        phone: "081290784563",
+        treatment: "Manicure",
+        date: "14-10-2026",
+        time: "16:30",
+        employee: "-",
+        status: "Ditolak"
+    }
+
+];
+
+
+let editCode = null;
+
+
+/* ================= MENAMPILKAN DATA ================= */
+
+function renderTable() {
+
+    const tbody =
+        document.getElementById("tableBody");
+
+
+    const search =
+        document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+
+    const date =
+        document
+        .getElementById("dateFilter")
+        .value;
+
+
+    const status =
+        document
+        .getElementById("statusFilter")
+        .value;
+
+
+    const filtered =
+        reservations.filter(r => {
+
+            const matchSearch =
+
+                r.customer
+                .toLowerCase()
+                .includes(search)
+
+                ||
+
+                r.phone
+                .toLowerCase()
+                .includes(search);
+
+
+            const matchDate =
+                !date ||
+                r.date === date;
+
+
+            const matchStatus =
+                !status ||
+                r.status === status;
+
+
+            return (
+                matchSearch &&
+                matchDate &&
+                matchStatus
+            );
+
+        });
+
+
+    if (filtered.length === 0) {
+
+        tbody.innerHTML = `
+
+            <tr>
+
+                <td colspan="9">
+
+                    <div
+                        style="
+                        text-align:center;
+                        padding:30px;
+                        color:#918890;
+                        "
+                    >
+
+                        Tidak ada data reservasi.
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+    }
+
+
+    tbody.innerHTML =
+
+        filtered.map(r => `
+
+            <tr>
+
+                <td class="code">
+                    ${r.code}
+                </td>
+
+                <td>
+                    ${r.customer}
+                </td>
+
+                <td>
+                    ${r.phone}
+                </td>
+
+                <td>
+                    ${r.treatment}
+                </td>
+
+                <td>
+                    ${formatDate(r.date)}
+                </td>
+
+                <td>
+                    ${r.time}
+                </td>
+
+                <td>
+                    ${r.employee}
+                </td>
+
+                <td>
+
+                    <span
+                        class="status
+                        ${statusClass(r.status)}">
+
+                        ${r.status}
+
+                    </span>
+
+                </td>
+
+                <td>
+
+                    ${actionButtons(r)}
+
+                </td>
+
+            </tr>
+
+        `).join("");
+
+}
+
+
+/* ================= STATUS CLASS ================= */
+
+function statusClass(status) {
+
+    return status
+        .toLowerCase()
+        .replace(" ", "");
+
+}
+
+
+/* ================= TOMBOL AKSI ================= */
+
+function actionButtons(r) {
+
+
+    if (r.status === "Menunggu") {
+
+        return `
+
+            <div class="actions">
+
+                <button
+                    class="action-btn confirm"
+                    onclick="
+                    changeStatus(
+                        '${r.code}',
+                        'Dikonfirmasi'
+                    )">
+
+                    Konfirmasi
+
+                </button>
+
+
+                <button
+                    class="action-btn reject"
+                    onclick="
+                    changeStatus(
+                        '${r.code}',
+                        'Ditolak'
+                    )">
+
+                    Tolak
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    if (r.status === "Dikonfirmasi") {
+
+        return `
+
+            <div class="actions">
+
+                <button
+                    class="action-btn edit"
+                    onclick="
+                    editReservation(
+                        '${r.code}'
+                    )">
+
+                    Ubah
+
+                </button>
+
+
+                <button
+                    class="action-btn done"
+                    onclick="
+                    changeStatus(
+                        '${r.code}',
+                        'Selesai'
+                    )">
+
+                    Selesai
+
+                </button>
+
+            </div>
+
+        `;
+
+    }
+
+
+    return `
+
+        <div class="actions">
+
+            <button
+                class="action-btn"
+                onclick="
+                viewReservation(
+                    '${r.code}'
+                )">
+
+                Lihat
+
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* ================= UBAH STATUS ================= */
+
+function changeStatus(code, newStatus) {
+
+    const r =
+        reservations.find(
+            x => x.code === code
+        );
+
+
+    if (!r) return;
+
+
+    r.status = newStatus;
+
+
+    if (newStatus === "Ditolak") {
+
+        r.employee = "-";
+
+    }
+
+
+    renderTable();
+
+
+    showToast(
+        `Reservasi ${code} → ${newStatus}`
+    );
+
+}
+
+
+/* ================= BUKA MODAL ================= */
+
+function openModal(code = null) {
+
+    editCode = code;
+
+
+    document
+        .getElementById("modalBg")
+        .classList
+        .add("show");
+
+
+    if (code) {
+
+        const r =
+            reservations.find(
+                x => x.code === code
+            );
+
+
+        document
+            .getElementById("modalTitle")
+            .textContent =
+            "Ubah Reservasi";
+
+
+        document
+            .getElementById("customer")
+            .value =
+            r.customer;
+
+
+        document
+            .getElementById("phone")
+            .value =
+            r.phone;
+
+
+        document
+            .getElementById("treatment")
+            .value =
+            r.treatment;
+
+
+        document
+            .getElementById("employee")
+            .value =
+            r.employee === "-"
+            ? ""
+            : r.employee;
+
+
+        document
+            .getElementById("date")
+            .value =
+            r.date;
+
+
+        document
+            .getElementById("time")
+            .value =
+            r.time;
+
+
+        document
+            .getElementById("status")
+            .value =
+            r.status;
+
+    }
+
+
+    else {
+
+        document
+            .getElementById("modalTitle")
+            .textContent =
+            "Tambah Reservasi";
+
+
+        document
+            .getElementById("reservationForm")
+            .reset();
+
+
+        document
+            .getElementById("date")
+            .value =
+            "2026-09-18";
+
+
+        document
+            .getElementById("status")
+            .value =
+            "Menunggu";
+
+    }
+
+}
+
+
+/* ================= TUTUP MODAL ================= */
+
+function closeModal() {
+
+    document
+        .getElementById("modalBg")
+        .classList
+        .remove("show");
+
+
+    editCode = null;
+
+}
+
+
+/* ================= EDIT ================= */
+
+function editReservation(code) {
+
+    openModal(code);
+
+}
+
+
+/* ================= SIMPAN ================= */
+
+function saveReservation(event) {
+
+    event.preventDefault();
+
+
+    const data = {
+
+        customer:
+            document
+            .getElementById("customer")
+            .value
+            .trim(),
+
+        phone:
+            document
+            .getElementById("phone")
+            .value
+            .trim(),
+
+        treatment:
+            document
+            .getElementById("treatment")
+            .value,
+
+        employee:
+            document
+            .getElementById("employee")
+            .value || "-",
+
+        date:
+            document
+            .getElementById("date")
+            .value,
+
+        time:
+            document
+            .getElementById("time")
+            .value,
+
+        status:
+            document
+            .getElementById("status")
+            .value
+
+    };
+
+
+    /* JIKA EDIT */
+
+    if (editCode) {
+
+        const index =
+            reservations.findIndex(
+                x => x.code === editCode
+            );
+
+
+        reservations[index] = {
+
+            ...reservations[index],
+
+            ...data
+
+        };
+
+
+        showToast(
+            "Data reservasi berhasil diubah."
+        );
+
+    }
+
+
+    /* JIKA TAMBAH */
+
+    else {
+
+        data.code =
+            generateCode();
+
+
+        reservations.unshift(data);
+
+
+        showToast(
+            "Reservasi baru berhasil ditambahkan."
+        );
+
+    }
+
+
+    closeModal();
+
+
+    renderTable();
+
+}
+
+
+/* ================= GENERATE KODE ================= */
+
+function generateCode() {
+
+    const nums =
+        reservations.map(
+            r =>
+            parseInt(
+                r.code.replace("RS-", "")
+            )
+        );
+
+
+    const next =
+        Math.max(...nums, 1038) + 1;
+
+
+    return "RS-" + next;
+
+}
+
+
+/* ================= LIHAT ================= */
+
+function viewReservation(code) {
+
+    const r =
+        reservations.find(
+            x => x.code === code
+        );
+
+
+    document
+        .getElementById("viewContent")
+        .innerHTML = `
+
+            <p>
+                <b>Kode:</b>
+                ${r.code}
+            </p>
+
+            <p>
+                <b>Pelanggan:</b>
+                ${r.customer}
+            </p>
+
+            <p>
+                <b>Nomor HP:</b>
+                ${r.phone}
+            </p>
+
+            <p>
+                <b>Treatment:</b>
+                ${r.treatment}
+            </p>
+
+            <p>
+                <b>Tanggal:</b>
+                ${formatDate(r.date)}
+            </p>
+
+            <p>
+                <b>Jam:</b>
+                ${r.time}
+            </p>
+
+            <p>
+                <b>Karyawan:</b>
+                ${r.employee}
+            </p>
+
+            <p>
+                <b>Status:</b>
+                ${r.status}
+            </p>
+
+        `;
+
+
+    document
+        .getElementById("viewBg")
+        .classList
+        .add("show");
+
+}
+
+
+/* ================= TUTUP VIEW ================= */
+
+function closeView() {
+
+    document
+        .getElementById("viewBg")
+        .classList
+        .remove("show");
+
+}
+
+
+/* ================= FORMAT TANGGAL ================= */
+
+function formatDate(date) {
+
+    const d =
+        new Date(
+            date + "T00:00:00"
+        );
+
+
+    return d.toLocaleDateString(
+        "id-ID",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }
+    );
+
+}
+
+
+/* ================= NOTIFIKASI ================= */
+
+function showToast(message) {
+
+    const toast =
+        document.getElementById("toast");
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.add("show");
+
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 2200);
+
+}
+
+
+/* ================= KLIK LUAR MODAL ================= */
+
+window.onclick = function(e) {
+
+    if (
+        e.target ===
+        document.getElementById("modalBg")
+    ) {
+
+        closeModal();
+
+    }
+
+
+    if (
+        e.target ===
+        document.getElementById("viewBg")
+    ) {
+
+        closeView();
+
+    }
+
+};
+
+
+/* ================= JALANKAN ================= */
+
+renderTable();
+
+</script>
+
+</body>
+</html>
